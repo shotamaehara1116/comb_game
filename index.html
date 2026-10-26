@@ -1,166 +1,213 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#172033" />
-  <title>Secret Theorems — 5×5</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#172033">
+<title>Secret Theorems — 5×5</title>
+<style>
+:root{
+  --bg:#f4f1e9; --paper:#fffdf8; --ink:#172033; --muted:#69717d;
+  --line:#d9d2c7; --p1:#c94f61; --p2:#397a9c; --gold:#b8841d;
+  --good:#14724a; --bad:#a93434; --shadow:0 16px 42px rgba(24,32,51,.09);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:radial-gradient(circle at 20% 0%,#fff,transparent 34rem),var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI","Noto Sans JP",sans-serif}
+button{font:inherit;cursor:pointer}
+.app{max-width:1180px;margin:0 auto;padding:26px 20px 44px}
+.hero{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:20px}
+.eyebrow{margin:0 0 6px;color:var(--gold);font-size:.72rem;letter-spacing:.16em;font-weight:900}
+h1{margin:0;font:700 clamp(2.2rem,5vw,4.25rem)/.95 Georgia,serif}
+.lead{margin:9px 0 0;color:var(--muted)}
+.header-actions,.turn-actions,.decision-actions,.result-actions{display:flex;gap:8px;flex-wrap:wrap}
+.game-layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px;align-items:start}
+.card,.panel{background:rgba(255,253,248,.96);border:1px solid rgba(80,75,65,.12);box-shadow:var(--shadow);border-radius:18px}
+.card{padding:16px}
+.turnbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}
+.turnbar strong{font-size:1.25rem;margin-right:7px}
+.phase{display:inline-block;padding:4px 8px;border-radius:999px;background:#efe9dc;color:#5c6570;font-size:.76rem}
+.board-shell{position:relative;width:min(100%,650px);aspect-ratio:1/1;margin:auto;border:1px solid var(--line);border-radius:16px;background:#e8e3d9;overflow:hidden}
+.theorem-layer{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.board{position:absolute;inset:0;z-index:2;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr)}
+.prop{
+  margin:11px;border:2px solid #d5cec2;border-radius:12px;background:#fffdf8;color:#3b4552;
+  box-shadow:0 2px 7px rgba(23,32,51,.06);font-weight:850;font-size:.82rem;
+  display:flex;align-items:center;justify-content:center;min-width:0;position:relative;transition:.12s ease;
+}
+.prop:hover{transform:translateY(-1px);border-color:#ae9f89}
+.prop.seed1{background:#fff0f2;border-color:#e39ba6}
+.prop.seed2{background:#eef7fb;border-color:#93bfd2}
+.prop.selected{outline:4px solid rgba(184,132,29,.28);border-color:var(--gold);background:#fff8df}
+.theorem-under{fill:none;stroke:#fffdf8;stroke-width:12;stroke-linecap:round;stroke-linejoin:round}
+.theorem-path{fill:none;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.theorem-node{stroke:#fffdf8;stroke-width:3}
+.legend{display:flex;gap:15px;flex-wrap:wrap;margin-top:13px;color:var(--muted);font-size:.84rem}
+.sw{display:inline-block;width:16px;height:16px;border-radius:4px;vertical-align:-3px;margin-right:5px;border:2px solid}
+.sw.p1{background:#fff0f2;border-color:#e39ba6}.sw.p2{background:#eef7fb;border-color:#93bfd2}.sw.n{background:#fffdf8;border-color:#d5cec2}.sw.s{background:#fff8df;border-color:var(--gold)}
+.side{display:grid;gap:14px}.panel{padding:16px}.panel h2{font-size:1.04rem;margin:0 0 8px}.panel p{line-height:1.6}
+.panel-title{display:flex;justify-content:space-between;align-items:center}.badge{min-width:30px;padding:3px 8px;text-align:center;border-radius:999px;background:#eee9de;font-size:.78rem;font-weight:850}
+.tile-list{display:grid;gap:6px;max-height:390px;overflow:auto}.tile-list.empty{color:var(--muted);font-size:.88rem}
+.tile-card,.proof-tile{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 9px;display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:.81rem}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.kind{font-weight:900}
+button{border:0;border-radius:10px;padding:10px 12px;font-weight:800;transition:.12s ease}button:hover:not(:disabled){transform:translateY(-1px)}button:disabled{opacity:.4;cursor:not-allowed}
+.primary{background:var(--ink);color:#fff}.claim{background:var(--gold);color:#fff}.ghost{background:#ece8de;color:var(--ink)}.danger{color:#8f2b32}.small{padding:8px 9px;font-size:.82rem}
+.message{margin-top:13px;padding:10px 11px;border-radius:10px;font-size:.88rem;line-height:1.45}.neutral{background:#f0eee8;color:#59626e}.good{background:#e8f5ed;color:#12623c}.bad{background:#f9e9e9;color:#8b2a2a}
+.decision{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:13px;padding:12px;border:1px solid #e8ce7e;background:#fff6d9;border-radius:12px}.decision span{display:block;font-size:.84rem;color:#6d6040;margin-top:2px}.hidden{display:none!important}
+.muted{color:var(--muted)}.tiny{font-size:.77rem}
+dialog{border:0;border-radius:18px;background:var(--paper);color:var(--ink);box-shadow:0 30px 90px rgba(0,0,0,.24);width:min(920px,calc(100vw - 28px));max-height:90vh}
+dialog::backdrop{background:rgba(23,28,35,.55);backdrop-filter:blur(3px)}
+.dialog-head{display:flex;justify-content:space-between;align-items:start;gap:16px}.dialog-head h2{margin:0}.icon{width:36px;height:36px;padding:0;background:#eee9de;font-size:1.3rem}
+.proof-help{line-height:1.6;color:#4d5866}.proof-grid,.proof-body{display:grid;grid-template-columns:1fr 1fr;gap:13px}.proof-grid>div,.proof-body>div{background:#f6f3ec;border-radius:12px;padding:11px}.proof-grid h3,.proof-body h3{font-size:.88rem;margin:0 0 7px}
+.chips{display:flex;gap:5px;flex-wrap:wrap}.chip{padding:4px 7px;border-radius:999px;background:white;border:1px solid var(--line);font-size:.74rem}.chip.known{background:#e8f5ed;border-color:#a7d7bb}.chip.target-done{background:#fff0c9;border-color:#e2bd60}
+.proof-body{margin-top:13px}.proof-list{display:grid;gap:6px;max-height:300px;overflow:auto}.proof-tile{width:100%;text-align:left}.proof-log{margin:0;padding-left:19px;line-height:1.55;font-size:.84rem;max-height:300px;overflow:auto}
+.proof-foot{display:flex;justify-content:flex-end;gap:7px;flex-wrap:wrap;margin-top:12px}.rules{width:min(640px,calc(100vw - 28px))}.rules-copy{line-height:1.65}.result{width:min(460px,calc(100vw - 28px))}.result-box{text-align:center;padding:8px}.result-box h2{font:700 2rem Georgia,serif}.result-actions{justify-content:center}
+@media(max-width:900px){.game-layout{grid-template-columns:1fr}.side{grid-template-columns:1fr 1fr}.side .panel:first-child{grid-column:1/-1}}
+@media(max-width:620px){
+  .app{padding:16px 10px 28px}.hero,.turnbar,.decision{align-items:stretch;flex-direction:column}.header-actions button,.turn-actions button,.decision-actions button{flex:1}
+  .card{padding:10px}.prop{margin:7px;border-radius:8px;font-size:.66rem}.side{grid-template-columns:1fr}.side .panel:first-child{grid-column:auto}.proof-grid,.proof-body{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
 <main class="app">
-  <header class="hero">
-    <div>
-      <p class="eyebrow">5×5 SHARED-CLOSURE GAME</p>
-      <h1>Secret Theorems</h1>
-      <p class="lead">共有する定理は、あなたにも相手にも使える。</p>
-    </div>
-    <div class="header-actions">
-      <button id="rulesBtn" class="ghost">ルール</button>
-      <button id="restartBtn" class="ghost danger">最初から</button>
-    </div>
-  </header>
-
-  <section class="game-layout">
-    <section class="board-card">
-      <div class="turnbar">
-        <div>
-          <span class="muted">手番</span>
-          <strong id="turnText">先手</strong>
-          <span id="phaseText" class="phase-badge">定理を選ぶ</span>
-        </div>
-        <div class="turn-actions">
-          <button id="clearSelectionBtn" class="ghost small">選択解除</button>
-          <button id="publishBtn" class="primary" disabled>この定理を公開</button>
-        </div>
-      </div>
-
-      <div id="boardWrap" class="board-wrap">
-        <svg id="theoremLayer" class="theorem-layer" viewBox="0 0 500 500" aria-hidden="true"></svg>
-        <div id="board" class="board" aria-label="5×5 proposition panels"></div>
-      </div>
-
-      <div class="legend">
-        <span><i class="panel-swatch p1"></i> 先手の初期シード</span>
-        <span><i class="panel-swatch p2"></i> 後手の初期シード</span>
-        <span><i class="panel-swatch neutral"></i> 中立命題</span>
-        <span><i class="panel-swatch selected"></i> 選択中</span>
-      </div>
-
-      <div id="selectionMessage" class="message neutral">
-        3つの命題パネルを選んでください。
-      </div>
-
-      <div id="decisionBar" class="decision-bar hidden">
-        <div>
-          <strong>定理を公開しました。</strong>
-          <span>このまま証明を試しますか？</span>
-        </div>
-        <div class="decision-actions">
-          <button id="proveNowBtn" class="claim">証明する</button>
-          <button id="passBtn" class="primary">相手に渡す</button>
-        </div>
-      </div>
-    </section>
-
-    <aside class="side">
-      <section class="panel">
-        <h2>勝利申告</h2>
-        <p>自分の10個の初期シードから、相手の10個すべてを導けると思ったら証明します。</p>
-        <button id="proveBtn" class="claim">証明します</button>
-        <p class="tiny muted">失敗してもペナルティはありません。</p>
-      </section>
-
-      <section class="panel">
-        <div class="panel-title-row">
-          <h2>公開済みの定理</h2>
-          <span id="tileCount" class="badge">0</span>
-        </div>
-        <div id="tileList" class="tile-list empty">まだ定理は公開されていません。</div>
-      </section>
-    </aside>
-  </section>
+<header class="hero">
+  <div><p class="eyebrow">5×5 SHARED-CLOSURE GAME</p><h1>Secret Theorems</h1><p class="lead">共有する定理は、あなたにも相手にも使える。</p></div>
+  <div class="header-actions"><button id="rulesBtn" class="ghost">ルール</button><button id="restartBtn" class="ghost danger">最初から</button></div>
+</header>
+<section class="game-layout">
+<section class="card">
+  <div class="turnbar">
+    <div><span class="muted">手番　</span><strong id="turnText">先手</strong><span id="phaseText" class="phase">定理を選ぶ</span></div>
+    <div class="turn-actions"><button id="clearBtn" class="ghost small">選択解除</button><button id="publishBtn" class="primary" disabled>この定理を公開</button></div>
+  </div>
+  <div class="board-shell">
+    <svg id="theoremLayer" class="theorem-layer" viewBox="0 0 500 500" preserveAspectRatio="none"></svg>
+    <div id="board" class="board"></div>
+  </div>
+  <div class="legend"><span><i class="sw p1"></i>先手シード</span><span><i class="sw p2"></i>後手シード</span><span><i class="sw n"></i>中立命題</span><span><i class="sw s"></i>選択中</span></div>
+  <div id="msg" class="message neutral">3つの命題パネルを選んでください。</div>
+  <div id="decision" class="decision hidden">
+    <div><strong>定理を公開しました。</strong><span>この手番で証明を試しますか？</span></div>
+    <div class="decision-actions"><button id="proveNowBtn" class="claim">証明する</button><button id="passBtn" class="primary">相手に渡す</button></div>
+  </div>
+</section>
+<aside class="side">
+  <section class="panel"><h2>勝利申告</h2><p>自分の10個の初期シードから、相手の10個すべてを導けると思ったら証明します。</p><button id="proveBtn" class="claim">証明します</button><p class="tiny muted">証明失敗にペナルティはありません。</p></section>
+  <section class="panel"><div class="panel-title"><h2>公開済みの定理</h2><span id="tileCount" class="badge">0</span></div><div id="tileList" class="tile-list empty">まだ定理は公開されていません。</div></section>
+</aside>
+</section>
 </main>
 
-<dialog id="proofDialog" class="proof-dialog">
-  <form method="dialog" class="proof-shell">
-    <header class="proof-header">
-      <div>
-        <p class="eyebrow">PROOF MODE</p>
-        <h2><span id="proofPlayer">先手</span>の証明</h2>
-      </div>
-      <button value="cancel" class="icon-btn" aria-label="閉じる">×</button>
-    </header>
-
-    <p class="proof-help">
-      公開済みの定理を順番に使います。ある定理の3命題のうち2つをすでに知っていれば、
-      残り1つを新しく導けます。
-    </p>
-
-    <div class="proof-grid">
-      <div>
-        <h3>現在わかっている命題</h3>
-        <div id="knownChips" class="chips"></div>
-      </div>
-      <div>
-        <h3>相手の秘密10命題</h3>
-        <div id="targetChips" class="chips"></div>
-      </div>
-    </div>
-
-    <div class="proof-body">
-      <div>
-        <h3>使える定理</h3>
-        <div id="proofTileList" class="proof-tile-list"></div>
-      </div>
-      <div>
-        <h3>証明ログ</h3>
-        <ol id="proofLog" class="proof-log"></ol>
-      </div>
-    </div>
-
-    <div id="proofMessage" class="message neutral">自分の初期シードから始めます。</div>
-
-    <footer class="proof-footer">
-      <button id="autoProofBtn" type="button" class="ghost">自動検証</button>
-      <button id="resetProofBtn" type="button" class="ghost">証明をやり直す</button>
-      <button id="finishProofBtn" type="button" class="primary" disabled>この証明を提出</button>
-    </footer>
-  </form>
+<dialog id="proofDialog">
+  <div class="dialog-head"><div><p class="eyebrow">PROOF MODE</p><h2><span id="proofPlayer">先手</span>の証明</h2></div><button class="icon" onclick="document.getElementById('proofDialog').close()">×</button></div>
+  <p class="proof-help">公開済みの定理のうち、3命題中2命題をすでに知っているものを使って、残り1命題を導きます。</p>
+  <div class="proof-grid"><div><h3>現在わかっている命題</h3><div id="knownChips" class="chips"></div></div><div><h3>相手の秘密10命題</h3><div id="targetChips" class="chips"></div></div></div>
+  <div class="proof-body"><div><h3>使える定理</h3><div id="proofList" class="proof-list"></div></div><div><h3>証明ログ</h3><ol id="proofLog" class="proof-log"></ol></div></div>
+  <div id="proofMsg" class="message neutral">自分の初期シードから始めます。</div>
+  <div class="proof-foot"><button id="autoProofBtn" class="ghost">自動検証</button><button id="resetProofBtn" class="ghost">やり直す</button><button id="finishProofBtn" class="primary" disabled>証明を提出</button></div>
 </dialog>
 
-<dialog id="rulesDialog" class="rules-dialog">
-  <form method="dialog">
-    <header class="proof-header">
-      <div>
-        <p class="eyebrow">HOW TO PLAY</p>
-        <h2>ルール</h2>
-      </div>
-      <button value="cancel" class="icon-btn">×</button>
-    </header>
-    <div class="rules-copy">
-      <p><strong>1.</strong> 各プレイヤーは対角側に10個の初期シードを持ちます。</p>
-      <p><strong>2.</strong> 手番では未公開のL型またはI型の3命題定理を1つ公開します。</p>
-      <p><strong>3.</strong> 公開された定理は共有です。「3命題のうち2つを知っていれば残り1つも導ける」とします。</p>
-      <p><strong>4.</strong> 定理を公開した直後、手番プレイヤーは「証明する」か「相手に渡す」かを選びます。</p>
-      <p><strong>5.</strong> 相手の10個の初期シードをすべて導ければ勝利。ただし相手も同時にこちらの10個を導けるなら引き分けです。</p>
-      <p><strong>6.</strong> 証明失敗にペナルティはありません。失敗後もそのまま相手へ渡せます。</p>
-    </div>
-  </form>
+<dialog id="rulesDialog" class="rules">
+  <div class="dialog-head"><div><p class="eyebrow">HOW TO PLAY</p><h2>ルール</h2></div><button class="icon" onclick="document.getElementById('rulesDialog').close()">×</button></div>
+  <div class="rules-copy">
+    <p><strong>1.</strong> 各プレイヤーは対角側に10個の初期シードを持ちます。</p>
+    <p><strong>2.</strong> 手番では未公開のL型またはI型の3命題定理を1つ公開します。</p>
+    <p><strong>3.</strong> 公開された定理は共有です。3命題のうち2つを知っていれば残り1つを導けます。</p>
+    <p><strong>4.</strong> 定理公開後、同じプレイヤーが「証明する」か「相手に渡す」かを選びます。</p>
+    <p><strong>5.</strong> 相手の初期シード10個をすべて導ければ勝利。相手も同時にこちらを導けるなら引き分けです。</p>
+    <p><strong>6.</strong> 証明失敗にペナルティはありません。</p>
+  </div>
 </dialog>
 
-<dialog id="resultDialog" class="result-dialog">
-  <form method="dialog" class="result-box">
-    <p class="eyebrow">RESULT</p>
-    <h2 id="resultTitle"></h2>
-    <p id="resultText"></p>
-    <div class="result-actions">
-      <button value="cancel" class="ghost">盤面を見る</button>
-      <button id="resultRestartBtn" type="button" class="primary">もう一度</button>
-    </div>
-  </form>
-</dialog>
+<dialog id="resultDialog" class="result"><div class="result-box"><p class="eyebrow">RESULT</p><h2 id="resultTitle"></h2><p id="resultText"></p><div class="result-actions"><button onclick="document.getElementById('resultDialog').close()" class="ghost">盤面を見る</button><button id="resultRestartBtn" class="primary">もう一度</button></div></div></dialog>
+<script>
+(() => {
+const SIZE=5;
+const COLORS=["#ef5b5b","#3478d4","#16a36d","#9b59d0","#f0a324","#e2559e","#18a5b8","#8055c8","#73a52f","#f2763d","#3e9a8b","#c34374"];
+const $=id=>document.getElementById(id);
+const board=$("board"), layer=$("theoremLayer"), turnText=$("turnText"), phaseText=$("phaseText"), publishBtn=$("publishBtn"), clearBtn=$("clearBtn");
+const proveBtn=$("proveBtn"), proveNowBtn=$("proveNowBtn"), passBtn=$("passBtn"), restartBtn=$("restartBtn"), rulesBtn=$("rulesBtn");
+const list=$("tileList"), count=$("tileCount"), msg=$("msg"), decision=$("decision"), proofDialog=$("proofDialog"), rulesDialog=$("rulesDialog"), resultDialog=$("resultDialog");
+const proofPlayer=$("proofPlayer"), knownChips=$("knownChips"), targetChips=$("targetChips"), proofList=$("proofList"), proofLog=$("proofLog"), proofMsg=$("proofMsg");
+const resetProofBtn=$("resetProofBtn"), autoProofBtn=$("autoProofBtn"), finishProofBtn=$("finishProofBtn"), resultTitle=$("resultTitle"), resultText=$("resultText"), resultRestartBtn=$("resultRestartBtn");
+const key=([r,c])=>`${r},${c}`, parse=k=>k.split(",").map(Number), label=([r,c])=>`${String.fromCharCode(65+c)}${r+1}`, canon=pts=>pts.map(key).sort().join("|");
+let state, proofState;
 
-<script src="game.js"></script>
-</body>
-</html>
+function makeSeeds(){const p1=[],p2=[];for(let r=0;r<5;r++)for(let c=0;c<5;c++){if(r+c<=3)p1.push([r,c]);else if(r+c>=5)p2.push([r,c]);}return{p1,p2};}
+function fresh(){return{current:1,phase:"choose",selected:[],tiles:[],used:new Set(),seeds:makeSeeds(),over:false};}
+function init(){state=fresh();proofState=null;renderBoard();render();}
+function renderBoard(){
+  board.innerHTML="";const a=new Set(state.seeds.p1.map(key)),b=new Set(state.seeds.p2.map(key));
+  for(let r=0;r<5;r++)for(let c=0;c<5;c++){const x=document.createElement("button");x.type="button";x.className="prop";x.textContent=label([r,c]);x.title=`命題 ${label([r,c])}`;
+    if(a.has(`${r},${c}`))x.classList.add("seed1");else if(b.has(`${r},${c}`))x.classList.add("seed2");
+    x.onclick=()=>toggle([r,c]);board.appendChild(x);}
+}
+function shape(pts){
+  if(pts.length!==3||new Set(pts.map(key)).size!==3)return null;
+  const rs=pts.map(p=>p[0]),cs=pts.map(p=>p[1]),a=Math.min(...rs),b=Math.max(...rs),c=Math.min(...cs),d=Math.max(...cs);
+  if(a===b){const s=[...cs].sort((x,y)=>x-y);if(s[1]===s[0]+1&&s[2]===s[1]+1)return{kind:"I",ori:"H"};}
+  if(c===d){const s=[...rs].sort((x,y)=>x-y);if(s[1]===s[0]+1&&s[2]===s[1]+1)return{kind:"I",ori:"V"};}
+  if(b-a===1&&d-c===1)return{kind:"L"};
+  return null;
+}
+function toggle(p){if(state.over||state.phase!=="choose")return;const k=key(p),i=state.selected.findIndex(q=>key(q)===k);if(i>=0)state.selected.splice(i,1);else if(state.selected.length<3)state.selected.push(p);selectionUI();}
+function setMsg(t,cls){msg.textContent=t;msg.className=`message ${cls}`;}
+function selectionUI(){
+  [...board.children].forEach(x=>x.classList.remove("selected"));state.selected.forEach(([r,c])=>board.children[r*5+c].classList.add("selected"));
+  if(state.phase==="decision"){publishBtn.disabled=true;clearBtn.disabled=true;setMsg("公開後の判断フェーズです。証明するか、相手に渡してください。","good");return;}
+  clearBtn.disabled=false;const s=shape(state.selected),used=state.selected.length===3&&state.used.has(canon(state.selected));publishBtn.disabled=!(s&&!used&&!state.over);
+  if(state.selected.length<3)setMsg(`あと${3-state.selected.length}個の命題パネルを選んでください。`,"neutral");
+  else if(!s)setMsg("この3パネルはL型でもI型でもありません。","bad");
+  else if(used)setMsg("この定理はすでに公開済みです。","bad");else setMsg(`${s.kind}型の定理を公開できます。`,"good");
+}
+function publish(){
+  const s=shape(state.selected);if(state.phase!=="choose"||!s||state.used.has(canon(state.selected)))return;const pts=state.selected.map(p=>[...p]),id=state.tiles.length+1;
+  state.tiles.push({id,pts,kind:s.kind,ori:s.ori||null,by:state.current,color:COLORS[(id-1)%COLORS.length]});state.used.add(canon(pts));state.selected=[];state.phase="decision";render();
+}
+function pass(){if(state.phase!=="decision"||state.over)return;state.current=state.current===1?2:1;state.phase="choose";render();}
+function render(){turnText.textContent=state.current===1?"先手":"後手";turnText.style.color=state.current===1?"var(--p1)":"var(--p2)";phaseText.textContent=state.phase==="choose"?"定理を選ぶ":"証明するか選ぶ";decision.classList.toggle("hidden",state.phase!=="decision");proveBtn.disabled=state.phase==="decision";renderTheorems();renderList();selectionUI();}
+function svg(tag,attrs){const e=document.createElementNS("http://www.w3.org/2000/svg",tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);return e;}
+function theoremPath(t,index){
+  const lane=((index%4)-1.5)*4;
+  if(t.kind==="I"){
+    const p=[...t.pts].sort((a,b)=>a[0]===b[0]?a[1]-b[1]:a[0]-b[0]);
+    if(t.ori==="H"){const r=p[0][0],c0=p[0][1],y=(r+1)*100-5+lane;return `M ${c0*100+18} ${y} L ${(c0+3)*100-18} ${y}`;}
+    const c=p[0][1],r0=p[0][0],x=(c+1)*100-5+lane;return `M ${x} ${r0*100+18} L ${x} ${(r0+3)*100-18}`;
+  }
+  const rs=t.pts.map(p=>p[0]),cs=t.pts.map(p=>p[1]),r0=Math.min(...rs),c0=Math.min(...cs),x=(c0+1)*100+lane,y=(r0+1)*100+lane;
+  const present=new Set(t.pts.map(key));
+  const tl=present.has(`${r0},${c0}`),tr=present.has(`${r0},${c0+1}`),bl=present.has(`${r0+1},${c0}`),br=present.has(`${r0+1},${c0+1}`);
+  if(!br)return `M ${x-42} ${y} L ${x} ${y} L ${x} ${y-42}`;
+  if(!bl)return `M ${x+42} ${y} L ${x} ${y} L ${x} ${y-42}`;
+  if(!tr)return `M ${x-42} ${y} L ${x} ${y} L ${x} ${y+42}`;
+  return `M ${x+42} ${y} L ${x} ${y} L ${x} ${y+42}`;
+}
+function renderTheorems(){
+  layer.innerHTML="";state.tiles.forEach((t,i)=>{const d=theoremPath(t,i);layer.appendChild(svg("path",{d,class:"theorem-under"}));layer.appendChild(svg("path",{d,class:"theorem-path",stroke:t.color}));
+    const m=d.match(/L ([\d.]+) ([\d.]+)(?:\s|$)/);if(m)layer.appendChild(svg("circle",{cx:m[1],cy:m[2],r:5,fill:t.color,class:"theorem-node"}));});
+}
+function desc(t){return t.pts.map(label).join("・");}
+function renderList(){count.textContent=state.tiles.length;if(!state.tiles.length){list.className="tile-list empty";list.textContent="まだ定理は公開されていません。";return;}list.className="tile-list";list.innerHTML="";[...state.tiles].reverse().forEach(t=>{const d=document.createElement("div");d.className="tile-card";d.innerHTML=`<span><span class="dot" style="background:${t.color}"></span><span class="kind">T${t.id} ${t.kind}</span><br>${desc(t)}</span><strong>${t.by===1?"先手":"後手"}</strong>`;list.appendChild(d);});}
+function closure(seed){const known=new Set(seed.map(key));let changed=true;while(changed){changed=false;for(const t of state.tiles){const ks=t.pts.map(key);if(ks.filter(k=>known.has(k)).length>=2)for(const k of ks)if(!known.has(k)){known.add(k);changed=true;}}}return known;}
+function capture(p){const own=p===1?state.seeds.p1:state.seeds.p2,target=p===1?state.seeds.p2:state.seeds.p1,known=closure(own);return{ok:target.every(q=>known.has(key(q))),known};}
+function startProof(){if(state.over)return;const p=state.current;proofState={player:p,known:new Set((p===1?state.seeds.p1:state.seeds.p2).map(key)),used:new Set(),log:[]};proofPlayer.textContent=p===1?"先手":"後手";proofPlayer.style.color=p===1?"var(--p1)":"var(--p2)";renderProof();proofDialog.showModal();}
+function renderProof(){
+  const target=proofState.player===1?state.seeds.p2:state.seeds.p1;knownChips.innerHTML=[...proofState.known].sort().map(k=>`<span class="chip known">${label(parse(k))}</span>`).join("");
+  targetChips.innerHTML=target.map(p=>`<span class="chip ${proofState.known.has(key(p))?"target-done":""}">${label(p)} ${proofState.known.has(key(p))?"✓":""}</span>`).join("");proofList.innerHTML="";
+  state.tiles.forEach(t=>{const ks=t.pts.map(key),inside=ks.filter(k=>proofState.known.has(k)).length,missing=ks.filter(k=>!proofState.known.has(k)),usable=inside>=2&&missing.length&&!proofState.used.has(t.id);const b=document.createElement("button");b.type="button";b.className="proof-tile";b.disabled=!usable;b.innerHTML=`<span><span class="dot" style="background:${t.color}"></span><span class="kind">T${t.id} ${t.kind}</span><br>${desc(t)}</span><span>${inside}/3既知</span>`;b.onclick=()=>useTheorem(t);proofList.appendChild(b);});
+  proofLog.innerHTML=proofState.log.map(x=>`<li>${x}</li>`).join("");const ok=target.every(p=>proofState.known.has(key(p)));finishProofBtn.disabled=!ok;proofMsg.textContent=ok?"相手の10命題をすべて導けました。提出できます。":"使える定理を選んで推論をつないでください。";proofMsg.className=`message ${ok?"good":"neutral"}`;
+}
+function useTheorem(t){const ks=t.pts.map(key),inside=ks.filter(k=>proofState.known.has(k)),missing=ks.filter(k=>!proofState.known.has(k));if(inside.length<2||!missing.length)return;proofState.used.add(t.id);missing.forEach(k=>proofState.known.add(k));proofState.log.push(`T${t.id}（${desc(t)}）より ${missing.map(k=>label(parse(k))).join("・")} を導出`);renderProof();}
+function resetProof(){const p=proofState.player;proofState={player:p,known:new Set((p===1?state.seeds.p1:state.seeds.p2).map(key)),used:new Set(),log:[]};renderProof();}
+function autoProof(){resetProof();let changed=true;while(changed){changed=false;for(const t of state.tiles){if(proofState.used.has(t.id))continue;const ks=t.pts.map(key),inside=ks.filter(k=>proofState.known.has(k)),missing=ks.filter(k=>!proofState.known.has(k));if(inside.length>=2&&missing.length){proofState.used.add(t.id);missing.forEach(k=>proofState.known.add(k));proofState.log.push(`T${t.id}（${desc(t)}）より ${missing.map(k=>label(parse(k))).join("・")} を導出`);changed=true;}}}renderProof();}
+function submitProof(){const p=proofState.player;if(!capture(p).ok){proofMsg.textContent="まだ相手の秘密をすべて導けません。";proofMsg.className="message bad";return;}const other=capture(p===1?2:1);proofDialog.close();state.over=true;if(other.ok)result("引き分け","この時点では二人とも相手の10命題をすべて導けます。");else result(`${p===1?"先手":"後手"}の勝ち`,`${p===1?"先手":"後手"}だけが相手の秘密をすべて導きました。`);}
+function result(t,x){resultTitle.textContent=t;resultText.textContent=x;resultDialog.showModal();}
+
+publishBtn.onclick=publish;clearBtn.onclick=()=>{state.selected=[];selectionUI();};proveBtn.onclick=startProof;proveNowBtn.onclick=startProof;passBtn.onclick=pass;
+restartBtn.onclick=()=>{if(confirm("ゲームを最初からやり直しますか？"))init();};rulesBtn.onclick=()=>rulesDialog.showModal();
+resetProofBtn.onclick=resetProof;autoProofBtn.onclick=autoProof;finishProofBtn.onclick=submitProof;resultRestartBtn.onclick=()=>{resultDialog.close();init();};
+init();
+})();
+</script>
+</body></html>
