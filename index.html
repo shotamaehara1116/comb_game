@@ -1,0 +1,19 @@
+<!doctype html><html lang='ja'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Secret Theorems 5x5</title><link rel='stylesheet' href='style.css'></head><body>
+<main class='app'>
+<header><div><div class='eyebrow'>5×5 SHARED-CLOSURE GAME</div><h1>Secret Theorems</h1><p>共有する定理は、あなたの味方にも、相手の味方にもなる。</p></div><div class='actions'><button id='rulesBtn'>ルール</button><button id='restartBtn'>最初から</button></div></header>
+<div class='layout'>
+<section class='card boardCard'>
+<div class='turnbar'><div>手番：<strong id='turnText'>先手</strong></div><div class='actions'><button id='clearBtn'>選択解除</button><button id='publishBtn' class='primary' disabled>この定理を公開</button></div></div>
+<div id='boardWrap' class='boardWrap'><svg id='tileLayer' viewBox='0 0 500 500'></svg><div id='board' class='board'></div></div>
+<div class='legend'><span class='s p1'></span>先手シード <span class='s p2'></span>後手シード <span class='s sel'></span>選択中</div>
+<div id='msg' class='msg'>3点を選んでください。L型またはI型なら公開できます。</div>
+</section>
+<aside class='side'>
+<section class='card'><h2>勝利申告</h2><p>相手のシードを、自分のシードから公開済みの定理だけで導けると思ったら宣言します。</p><button id='proveBtn' class='claim'>証明します</button><small>失敗してもペナルティはありません。</small></section>
+<section class='card'><div class='row'><h2>公開済みの定理</h2><b id='count'>0</b></div><div id='tileList' class='tileList empty'>まだ定理はありません。</div></section>
+<section class='card'><label><b>初期シード</b></label><select id='seedMode'><option value='L3'>対角の角L（3点）</option><option value='BLOCK4'>対角の2×2（4点）</option></select></section>
+</aside></div></main>
+<dialog id='proofDialog'><div class='dialogHead'><div><div class='eyebrow'>PROOF MODE</div><h2><span id='proofPlayer'></span>の証明</h2></div><button id='closeProof'>×</button></div><p>2点が既知の公開定理を順番に使い、相手のシードをすべて導いてください。</p><div class='proofCols'><div><h3>既知</h3><div id='known'></div></div><div><h3>相手のシード</h3><div id='targets'></div></div></div><div class='proofBody'><div><h3>定理</h3><div id='proofTiles'></div></div><div><h3>証明ログ</h3><ol id='proofLog'></ol></div></div><div id='proofMsg' class='msg'></div><div class='actions right'><button id='autoProof'>自動検証</button><button id='resetProof'>やり直す</button><button id='submitProof' class='primary' disabled>この証明を提出</button></div></dialog>
+<dialog id='rulesDialog'><div class='dialogHead'><h2>ルール</h2><button id='closeRules'>×</button></div><ol><li>対角の角に初期シードを持ちます。</li><li>手番では未公開のL型またはI型の3点ピースを1つ公開します。</li><li>公開された定理は共有です。3点のうち2点が真だと知っていれば、3点目も真だとわかります。</li><li>途中のclosureは盤面に表示しません。</li><li>相手のシードをすべて導けると思ったら「証明します」と宣言します。</li><li>自分だけが相手を導ければ勝ち。双方が互いを導けるなら引き分けです。</li><li>証明失敗にペナルティはありません。</li></ol></dialog>
+<dialog id='resultDialog'><div class='result'><div class='eyebrow'>RESULT</div><h2 id='resultTitle'></h2><p id='resultText'></p><div class='actions center'><button id='closeResult'>盤面を見る</button><button id='again' class='primary'>もう一度</button></div></div></dialog>
+<script src='game.js'></script></body></html>
