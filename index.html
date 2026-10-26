@@ -1,19 +1,166 @@
-<!doctype html><html lang='ja'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Secret Theorems 5x5</title><link rel='stylesheet' href='style.css'></head><body>
-<main class='app'>
-<header><div><div class='eyebrow'>5×5 SHARED-CLOSURE GAME</div><h1>Secret Theorems</h1><p>共有する定理は、あなたの味方にも、相手の味方にもなる。</p></div><div class='actions'><button id='rulesBtn'>ルール</button><button id='restartBtn'>最初から</button></div></header>
-<div class='layout'>
-<section class='card boardCard'>
-<div class='turnbar'><div>手番：<strong id='turnText'>先手</strong></div><div class='actions'><button id='clearBtn'>選択解除</button><button id='publishBtn' class='primary' disabled>この定理を公開</button></div></div>
-<div id='boardWrap' class='boardWrap'><svg id='tileLayer' viewBox='0 0 500 500'></svg><div id='board' class='board'></div></div>
-<div class='legend'><span class='s p1'></span>先手シード <span class='s p2'></span>後手シード <span class='s sel'></span>選択中</div>
-<div id='msg' class='msg'>3点を選んでください。L型またはI型なら公開できます。</div>
-</section>
-<aside class='side'>
-<section class='card'><h2>勝利申告</h2><p>相手のシードを、自分のシードから公開済みの定理だけで導けると思ったら宣言します。</p><button id='proveBtn' class='claim'>証明します</button><small>失敗してもペナルティはありません。</small></section>
-<section class='card'><div class='row'><h2>公開済みの定理</h2><b id='count'>0</b></div><div id='tileList' class='tileList empty'>まだ定理はありません。</div></section>
-<section class='card'><label><b>初期シード</b></label><select id='seedMode'><option value='L3'>対角の角L（3点）</option><option value='BLOCK4'>対角の2×2（4点）</option></select></section>
-</aside></div></main>
-<dialog id='proofDialog'><div class='dialogHead'><div><div class='eyebrow'>PROOF MODE</div><h2><span id='proofPlayer'></span>の証明</h2></div><button id='closeProof'>×</button></div><p>2点が既知の公開定理を順番に使い、相手のシードをすべて導いてください。</p><div class='proofCols'><div><h3>既知</h3><div id='known'></div></div><div><h3>相手のシード</h3><div id='targets'></div></div></div><div class='proofBody'><div><h3>定理</h3><div id='proofTiles'></div></div><div><h3>証明ログ</h3><ol id='proofLog'></ol></div></div><div id='proofMsg' class='msg'></div><div class='actions right'><button id='autoProof'>自動検証</button><button id='resetProof'>やり直す</button><button id='submitProof' class='primary' disabled>この証明を提出</button></div></dialog>
-<dialog id='rulesDialog'><div class='dialogHead'><h2>ルール</h2><button id='closeRules'>×</button></div><ol><li>対角の角に初期シードを持ちます。</li><li>手番では未公開のL型またはI型の3点ピースを1つ公開します。</li><li>公開された定理は共有です。3点のうち2点が真だと知っていれば、3点目も真だとわかります。</li><li>途中のclosureは盤面に表示しません。</li><li>相手のシードをすべて導けると思ったら「証明します」と宣言します。</li><li>自分だけが相手を導ければ勝ち。双方が互いを導けるなら引き分けです。</li><li>証明失敗にペナルティはありません。</li></ol></dialog>
-<dialog id='resultDialog'><div class='result'><div class='eyebrow'>RESULT</div><h2 id='resultTitle'></h2><p id='resultText'></p><div class='actions center'><button id='closeResult'>盤面を見る</button><button id='again' class='primary'>もう一度</button></div></div></dialog>
-<script src='game.js'></script></body></html>
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#172033" />
+  <title>Secret Theorems — 5×5</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<main class="app">
+  <header class="hero">
+    <div>
+      <p class="eyebrow">5×5 SHARED-CLOSURE GAME</p>
+      <h1>Secret Theorems</h1>
+      <p class="lead">共有する定理は、あなたにも相手にも使える。</p>
+    </div>
+    <div class="header-actions">
+      <button id="rulesBtn" class="ghost">ルール</button>
+      <button id="restartBtn" class="ghost danger">最初から</button>
+    </div>
+  </header>
+
+  <section class="game-layout">
+    <section class="board-card">
+      <div class="turnbar">
+        <div>
+          <span class="muted">手番</span>
+          <strong id="turnText">先手</strong>
+          <span id="phaseText" class="phase-badge">定理を選ぶ</span>
+        </div>
+        <div class="turn-actions">
+          <button id="clearSelectionBtn" class="ghost small">選択解除</button>
+          <button id="publishBtn" class="primary" disabled>この定理を公開</button>
+        </div>
+      </div>
+
+      <div id="boardWrap" class="board-wrap">
+        <svg id="theoremLayer" class="theorem-layer" viewBox="0 0 500 500" aria-hidden="true"></svg>
+        <div id="board" class="board" aria-label="5×5 proposition panels"></div>
+      </div>
+
+      <div class="legend">
+        <span><i class="panel-swatch p1"></i> 先手の初期シード</span>
+        <span><i class="panel-swatch p2"></i> 後手の初期シード</span>
+        <span><i class="panel-swatch neutral"></i> 中立命題</span>
+        <span><i class="panel-swatch selected"></i> 選択中</span>
+      </div>
+
+      <div id="selectionMessage" class="message neutral">
+        3つの命題パネルを選んでください。
+      </div>
+
+      <div id="decisionBar" class="decision-bar hidden">
+        <div>
+          <strong>定理を公開しました。</strong>
+          <span>このまま証明を試しますか？</span>
+        </div>
+        <div class="decision-actions">
+          <button id="proveNowBtn" class="claim">証明する</button>
+          <button id="passBtn" class="primary">相手に渡す</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="panel">
+        <h2>勝利申告</h2>
+        <p>自分の10個の初期シードから、相手の10個すべてを導けると思ったら証明します。</p>
+        <button id="proveBtn" class="claim">証明します</button>
+        <p class="tiny muted">失敗してもペナルティはありません。</p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title-row">
+          <h2>公開済みの定理</h2>
+          <span id="tileCount" class="badge">0</span>
+        </div>
+        <div id="tileList" class="tile-list empty">まだ定理は公開されていません。</div>
+      </section>
+    </aside>
+  </section>
+</main>
+
+<dialog id="proofDialog" class="proof-dialog">
+  <form method="dialog" class="proof-shell">
+    <header class="proof-header">
+      <div>
+        <p class="eyebrow">PROOF MODE</p>
+        <h2><span id="proofPlayer">先手</span>の証明</h2>
+      </div>
+      <button value="cancel" class="icon-btn" aria-label="閉じる">×</button>
+    </header>
+
+    <p class="proof-help">
+      公開済みの定理を順番に使います。ある定理の3命題のうち2つをすでに知っていれば、
+      残り1つを新しく導けます。
+    </p>
+
+    <div class="proof-grid">
+      <div>
+        <h3>現在わかっている命題</h3>
+        <div id="knownChips" class="chips"></div>
+      </div>
+      <div>
+        <h3>相手の秘密10命題</h3>
+        <div id="targetChips" class="chips"></div>
+      </div>
+    </div>
+
+    <div class="proof-body">
+      <div>
+        <h3>使える定理</h3>
+        <div id="proofTileList" class="proof-tile-list"></div>
+      </div>
+      <div>
+        <h3>証明ログ</h3>
+        <ol id="proofLog" class="proof-log"></ol>
+      </div>
+    </div>
+
+    <div id="proofMessage" class="message neutral">自分の初期シードから始めます。</div>
+
+    <footer class="proof-footer">
+      <button id="autoProofBtn" type="button" class="ghost">自動検証</button>
+      <button id="resetProofBtn" type="button" class="ghost">証明をやり直す</button>
+      <button id="finishProofBtn" type="button" class="primary" disabled>この証明を提出</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog id="rulesDialog" class="rules-dialog">
+  <form method="dialog">
+    <header class="proof-header">
+      <div>
+        <p class="eyebrow">HOW TO PLAY</p>
+        <h2>ルール</h2>
+      </div>
+      <button value="cancel" class="icon-btn">×</button>
+    </header>
+    <div class="rules-copy">
+      <p><strong>1.</strong> 各プレイヤーは対角側に10個の初期シードを持ちます。</p>
+      <p><strong>2.</strong> 手番では未公開のL型またはI型の3命題定理を1つ公開します。</p>
+      <p><strong>3.</strong> 公開された定理は共有です。「3命題のうち2つを知っていれば残り1つも導ける」とします。</p>
+      <p><strong>4.</strong> 定理を公開した直後、手番プレイヤーは「証明する」か「相手に渡す」かを選びます。</p>
+      <p><strong>5.</strong> 相手の10個の初期シードをすべて導ければ勝利。ただし相手も同時にこちらの10個を導けるなら引き分けです。</p>
+      <p><strong>6.</strong> 証明失敗にペナルティはありません。失敗後もそのまま相手へ渡せます。</p>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="resultDialog" class="result-dialog">
+  <form method="dialog" class="result-box">
+    <p class="eyebrow">RESULT</p>
+    <h2 id="resultTitle"></h2>
+    <p id="resultText"></p>
+    <div class="result-actions">
+      <button value="cancel" class="ghost">盤面を見る</button>
+      <button id="resultRestartBtn" type="button" class="primary">もう一度</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="game.js"></script>
+</body>
+</html>
