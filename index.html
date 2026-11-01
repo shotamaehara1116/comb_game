@@ -1,1 +1,205 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>交点彩色ゲーム | 白点精算・ズーム対応</title>
+<style>
+:root{--bg:#0b1020;--panel:#151d30;--edge:#34415d;--txt:#eef3ff;--mute:#a7b3cd;--red:#ff6477;--blue:#63a8ff;--white:#f8f5e9;--gold:#ffcf78}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 70% -10%,#20345c,transparent 48%),var(--bg);color:var(--txt);font:15px/1.6 system-ui,-apple-system,'Noto Sans JP',sans-serif}.wrap{max-width:1270px;margin:auto;padding:22px}h1{margin:0;font-size:clamp(23px,3vw,34px);letter-spacing:.02em}h2{font-size:16px;margin:0 0 10px}.sub{color:var(--mute);margin:4px 0 19px}.layout{display:grid;grid-template-columns:minmax(0,1fr) 345px;gap:16px}.panel{background:var(--panel);border:1px solid var(--edge);border-radius:17px;padding:16px;box-shadow:0 14px 32px #0002}.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}button,select,input{font:inherit}button{cursor:pointer;color:var(--txt);background:#25334e;border:1px solid #465576;border-radius:9px;padding:8px 12px}button:hover:not(:disabled){background:#35476a}button:disabled{opacity:.38;cursor:not-allowed}button.primary{background:#3767b3;border-color:#639bff}button.primary:hover{background:#4278cf}.muted{color:var(--mute);font-size:13px}.board{background:#0a1324;border:1px solid #30415a;border-radius:12px;overflow:hidden;position:relative}svg{width:100%;height:clamp(390px,52vw,650px);display:block;touch-action:manipulation}.line{stroke:#71819c;stroke-width:.85px;stroke-opacity:.72;vector-effect:non-scaling-stroke;pointer-events:none}.link{stroke:#c6daff;stroke-opacity:.18;stroke-width:5;pointer-events:none}.hit{cursor:pointer}.hit:focus{outline:none}.halo{display:none}.node{stroke:#0b1527;stroke-width:2.6}.node.free{fill:#263b5a;stroke:#88a8db}.node.blocked{fill:#354053;stroke:#b1b9c8;stroke-dasharray:3 3}.mark{font-size:12px;font-weight:900;text-anchor:middle;dominant-baseline:central;pointer-events:none}.score{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}.score>div{border:1px solid var(--edge);border-radius:12px;padding:10px;background:#0e1729}.score b{font-size:26px;white-space:nowrap}.score b.final-breakdown{font-size:20px}.turn{background:#243453;border-radius:11px;padding:10px 12px;margin-bottom:12px;font-weight:700}.choices{display:flex;gap:8px;margin-bottom:12px}.choice{flex:1;display:flex;align-items:center;justify-content:center;gap:8px}.choice.active{border:2px solid var(--gold);padding:7px 11px}[hidden]{display:none!important}.swatch{display:inline-block;width:14px;height:14px;border-radius:50%;border:1px solid #999}.red{background:var(--red)}.blue{background:var(--blue)}.white{background:var(--white)}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.stat{background:#0d1729;border-radius:9px;padding:9px;text-align:center}.stat strong{display:block;font-size:19px}.rules{font-size:13px;color:var(--mute);margin:8px 0}.ruleblock{border-top:1px solid var(--edge);margin-top:14px;padding-top:14px}.rows{max-height:300px;overflow:auto;display:grid;gap:6px}.line-row{display:grid;grid-template-columns:20px 1fr 1fr 32px;gap:6px;align-items:center}.line-row select{width:100%;background:#0d1729;border:1px solid #3f516e;color:var(--txt);border-radius:7px;padding:5px}.line-row button{padding:4px}.small{font-size:12px}.toast{min-height:40px;color:var(--gold);font-size:13px;margin-top:8px}.legend{display:flex;flex-wrap:wrap;gap:13px;color:var(--mute);font-size:12px;margin-top:10px}.dot{display:inline-block;height:10px;width:10px;border-radius:50%;margin-right:3px}.result{font-weight:800;color:var(--gold)}.zoom-controls{display:flex;align-items:center;gap:5px}.zoom-controls button{min-width:35px;font-weight:700}.room-formula{margin:9px 0 12px;padding:10px 12px;border:1px solid #445a79;background:#101f36;border-radius:10px;font-size:13px}.room-formula strong{color:#ffcf78;font-size:17px}.page-zoom{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 14px}.page-zoom button{min-width:36px}.page-zoom span{font-size:13px;color:var(--mute)}.region-label{fill:#fff;font-weight:750;paint-order:stroke;stroke:#0b1020;stroke-width:3px;stroke-linejoin:round;vector-effect:non-scaling-stroke;pointer-events:none}.lens-line{stroke:#b9d2ff!important;stroke-opacity:1!important;stroke-width:1.35px!important}.ai-hint{font-size:12px;color:#b7d2ff;margin:5px 0 9px}.white-score{padding:8px 11px;background:#0e1729;border:1px solid var(--edge);border-radius:10px;margin:9px 0;font-size:13px}@media(max-width:850px){.layout{grid-template-columns:1fr}.wrap{padding:12px}.panel{padding:12px}svg{height:450px}}@media(max-width:480px){svg{height:380px}.toolbar button{padding:7px 9px}.score b{font-size:22px}}
+.top-rules{margin:0 0 16px;padding:14px 18px}.top-rules h2{margin:0 0 8px}.top-rules{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 18px}.top-rules h2{grid-column:1/-1}.top-rules .rules{margin:0;border-left:2px solid #40547b;padding-left:11px;line-height:1.55}.editor-details summary{cursor:pointer;font-size:16px;font-weight:700;list-style:revert}.editor-details[open] summary{margin-bottom:12px}@media(max-width:1050px){.top-rules{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.top-rules{grid-template-columns:1fr}}</style></head><body><div class="wrap"><h1>交点彩色ゲーム</h1><p class="sub">Affine 直線配置 (整数傾き・整数切片)を舞台とした2人対戦ゲーム</p><div class="page-zoom"><span>画面全体の表示倍率</span><button id="pageOut" title="画面全体を縮小">−</button><span id="pageZoomLabel">100%</span><button id="pageIn" title="画面全体を拡大">＋</button><button id="pageReset">標準サイズ</button><span>（文字・操作パネルも拡大縮小）</span></div><div class="panel top-rules"><h2>ルール</h2><p class="rules">各プレイヤーは交互に，どこかの点を{赤，青，白}のどれかで塗りつぶします．ただし，隣りと同じ色は使えません。お互い何色を使っても良いですが，最終的に「赤は先手の得点」「青は後手の得点」「白は中立」になるので注意してください。</p><p class="rules"><strong>基本的に，色のついた点ひとつが1得点になります。ただし，小さく数字の書いてある点(＝多重点)はポイントが大きいです。</strong>最終的に，赤が先手の，青が後手の得点になります。白で塗られた点が持つ得点は，各プレイヤーに半分ずつ山分けします（ただし，奇数なら後手に1ポイント多く配分）。</p><p class="rules"><span id="blockRule">まだ塗られていないのに，ルール的に二度と塗れなくなってしまった点</span>は「封鎖」され，その手を打ったプレイヤーに対応する色の「×」マーカーが付きます。<strong>封鎖された点も同じように，封鎖したプレイヤーの得点になります。</strong></p><p class="rules">すべての点が塗られるか，封鎖されればゲーム終了。合計点の多いプレイヤーの勝ちです。このとき，(両者の最終得点の和)＋(全部の直線の数)＋1が「部屋」の数になります。(Zaslavskyの定理)</p></div><div class="layout"><main class="panel"><div class="toolbar"><button class="primary" id="random">↻ ランダム配置</button><button id="restart">同じ配置で再戦</button><button id="undo">↶ 1手戻す</button><label class="small muted">対戦相手 <select id="opponent"><option value="ai">AI（後手）</option><option value="human">人間同士</option></select></label><label class="small muted" id="depthLabel">AIのレベル <select id="aiDepth"><option value="1" selected>レベル1</option><option value="2">レベル2</option><option value="3">レベル3</option></select></label><label class="small muted">直線数 <select id="count"></select></label><label class="small muted">色数 <select id="mode"><option value="3">3色（赤・青・白）</option><option value="2">2色（赤・青）</option></select></label><div class="zoom-controls"><button id="zoomOut" title="盤面を縮小" aria-label="盤面を縮小">−</button><span class="small muted" id="zoomLabel">100%</span><button id="zoomIn" title="盤面を拡大" aria-label="盤面を拡大">＋</button><button id="fit">全体表示</button></div></div><div class="board"><svg id="board" viewBox="-5 -5 10 10" aria-label="交点を選んで塗るゲーム盤" role="group"></svg></div><div class="legend"><span><i class="dot" style="background:#263b5a;border:1px solid #88a8db"></i>未彩色</span><span><i class="dot" style="background:#ff6477"></i>赤</span><span><i class="dot" style="background:#63a8ff"></i>青</span><span id="whiteLegend"><i class="dot" style="background:#f8f5e9"></i>白</span><span>×：封鎖（輪の色＝封鎖者）</span></div><div class="muted small" style="margin-top:7px">交点にカーソルを合わせると，直線ごと周辺を拡大表示します。</div><div class="muted small" id="viewinfo" style="margin-top:8px"></div></main><aside class="panel"><h2>対戦状況</h2><div class="turn" id="turn"></div><div class="room-formula" id="roomFormula" hidden aria-live="polite"></div><div class="score"><div><div style="color:var(--red)">● 先手・赤陣営</div><b id="score0">0</b><div class="muted small" id="detail0">彩色 0 / 封鎖 0</div></div><div><div style="color:var(--blue)">● 後手・青陣営</div><b id="score1">0</b><div class="muted small" id="detail1">彩色 0 / 封鎖 0</div></div></div><div class="white-score" id="whiteScore" aria-live="polite"></div><h2>塗る色を選択</h2><div class="choices" id="choices"><button class="choice active" data-color="red"><i class="swatch red"></i>赤</button><button class="choice" data-color="blue"><i class="swatch blue"></i>青</button><button class="choice" id="whiteChoice" data-color="white"><i class="swatch white"></i>白</button></div><p class="muted small">色を選び，盤上の交点をクリックしてください。どちらのプレイヤーも利用可能な色を自由に使用できます。AI対戦ではあなたが先手（赤陣営），AIが後手（青陣営）です。</p><div class="summary"><div class="stat"><strong id="remaining">0</strong><span class="muted small">未彩色</span></div><div class="stat"><strong id="blocked">0</strong><span class="muted small">封鎖</span></div><div class="stat"><strong id="moves">0</strong><span class="muted small">手数</span></div></div><div id="message" class="toast" aria-live="polite"></div><details class="ruleblock editor-details"><summary>直線配置の編集</summary><p class="muted small">すべて y = ax + b，a, b は −3〜3 の整数。重複する直線は追加できません。変更すると盤面がリセットされます。</p><div class="line-row muted small"><span></span><span>傾き a</span><span>切片 b</span><span></span></div><div class="rows" id="lineRows"></div><div style="display:flex;gap:8px;margin-top:10px"><button id="add">＋ 直線を追加</button><button id="apply" class="primary">配置を適用</button></div></details></aside></div></div>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id), NS='http://www.w3.org/2000/svg';
+let baseView=null, zoomFactor=1, pageZoom=1;let lines=[],nodes=[],regions=[],history=[],selected='red',turn=0,done=false,notes='',view=null,mode=3;
+ let aiTimer=null, aiBusy=false, aiEpoch=0;
+ let audioCtx=null;
+ function unlockSound(){
+   try{
+     const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+     if(!AudioContextClass)return;
+     if(!audioCtx)audioCtx=new AudioContextClass();
+     if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});
+   }catch(e){}
+ }
+ // Short, quiet Web Audio effects.  A real user click unlocks audio on mobile browsers.
+ function moveSound(fromAI){
+   try{
+     if(!audioCtx||audioCtx.state!=='running')return;
+     const t=audioCtx.currentTime;
+     const oscillator=audioCtx.createOscillator(), gain=audioCtx.createGain();
+     oscillator.type='sine';
+     oscillator.frequency.setValueAtTime(fromAI?530:410,t);
+     oscillator.frequency.exponentialRampToValueAtTime(fromAI?680:510,t+0.085);
+     gain.gain.setValueAtTime(0.0001,t);
+     gain.gain.exponentialRampToValueAtTime(0.095,t+0.012);
+     gain.gain.exponentialRampToValueAtTime(0.0001,t+0.135);
+     oscillator.connect(gain);gain.connect(audioCtx.destination);
+     oscillator.start(t);oscillator.stop(t+0.15);
+   }catch(e){}
+ }
+ // Capture a user gesture to enable sound, without changing any game controls.
+ document.addEventListener('pointerdown',unlockSound,{passive:true});
+ document.addEventListener('keydown',unlockSound);
+ const vsAI=()=>$('opponent').value==='ai';
+ function cancelAI(){aiEpoch++;if(aiTimer!==null)clearTimeout(aiTimer);aiTimer=null;aiBusy=false;}
+const palette=()=>mode===2?['red','blue']:['red','blue','white'];
+const cols={red:'#ff6477',blue:'#63a8ff',white:'#f8f5e9'};
+const key=(a,b)=>`${a}/${b}`;
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b)[a,b]=[b,a%b];return a||1}
+function frac(n,d){if(d<0){n=-n;d=-d}let g=gcd(n,d);return [n/g,d/g]}
+function mkSvg(tag,attrs,parent){let e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);(parent||$('board')).appendChild(e);return e}
+// 各直線で十分大きな矩形を順次分割し，各部屋の凸多角形を構成する。
+function clipPoly(poly, l, side){const out=[],eps=1e-9;for(let i=0;i<poly.length;i++){let p=poly[i],q=poly[(i+1)%poly.length];let dp=side*(p.y-l.a*p.x-l.b),dq=side*(q.y-l.a*q.x-l.b);let insideP=dp>=-eps,insideQ=dq>=-eps;if(insideP)out.push(p);if(insideP!==insideQ){let t=dp/(dp-dq);out.push({x:p.x+(q.x-p.x)*t,y:p.y+(q.y-p.y)*t})}}return out}
+function polygonArea(poly){let a=0;for(let i=0;i<poly.length;i++){let p=poly[i],q=poly[(i+1)%poly.length];a+=p.x*q.y-q.x*p.y}return Math.abs(a)/2}
+function polyCenter(poly){let a=0,cx=0,cy=0;for(let i=0;i<poly.length;i++){let p=poly[i],q=poly[(i+1)%poly.length],cross=p.x*q.y-q.x*p.y;a+=cross;cx+=(p.x+q.x)*cross;cy+=(p.y+q.y)*cross}if(Math.abs(a)<1e-10)return {x:poly.reduce((v,p)=>v+p.x,0)/poly.length,y:poly.reduce((v,p)=>v+p.y,0)/poly.length};return {x:cx/(3*a),y:cy/(3*a)}}
+function computeRegions(){const extent=Math.max(8,...nodes.map(n=>Math.max(Math.abs(n.x),Math.abs(n.y))))+8;const M=extent*3;let polygons=[[{x:-M,y:-M},{x:M,y:-M},{x:M,y:M},{x:-M,y:M}]];for(let l of lines){let next=[];for(let poly of polygons){for(let side of [-1,1]){const cut=clipPoly(poly,l,side);if(cut.length>=3&&polygonArea(cut)>1e-7)next.push(cut)}}polygons=next}regions=polygons.map((poly,i)=>({number:i+1,poly}));}
+function visibleRegions(){let box=[{x:view.x,y:view.y},{x:view.x+view.w,y:view.y},{x:view.x+view.w,y:view.y+view.h},{x:view.x,y:view.y+view.h}];const sides=[{a:0,b:view.y},{a:0,b:view.y+view.h},{a:Infinity,b:view.x},{a:Infinity,b:view.x+view.w}];return regions.map(reg=>{let p=reg.poly; // 現在の表示矩形との共通部分を取る
+p=clipVertical(p,view.x,true);p=clipVertical(p,view.x+view.w,false);p=clipPoly(p,{a:0,b:view.y},1);p=clipPoly(p,{a:0,b:view.y+view.h},-1);return p.length>=3&&polygonArea(p)>1e-9?{number:reg.number,center:polyCenter(p)}:null}).filter(Boolean)}
+function clipVertical(poly,x,greater){let out=[];for(let i=0;i<poly.length;i++){let p=poly[i],q=poly[(i+1)%poly.length],dp=(greater?1:-1)*(p.x-x),dq=(greater?1:-1)*(q.x-x),ip=dp>=-1e-9,iq=dq>=-1e-9;if(ip)out.push(p);if(ip!==iq){let t=dp/(dp-dq);out.push({x:p.x+(q.x-p.x)*t,y:p.y+(q.y-p.y)*t})}}return out}
+function calculate(){cancelAI();let map=new Map();for(let i=0;i<lines.length;i++)for(let j=i+1;j<lines.length;j++){let A=lines[i],B=lines[j];if(A.a===B.a)continue;let fx=frac(B.b-A.b,A.a-B.a),fy=frac(A.a*fx[0]+A.b*fx[1],fx[1]);let k=`${fx.join('/')}:${fy.join('/')}`;if(!map.has(k))map.set(k,{id:k,x:fx[0]/fx[1],y:fy[0]/fy[1],fx,fy,inc:[],adj:new Set(),color:null,block:null});let n=map.get(k);if(!n.inc.includes(i))n.inc.push(i);if(!n.inc.includes(j))n.inc.push(j)}nodes=[...map.values()];for(let i=0;i<lines.length;i++){let on=nodes.filter(n=>n.inc.includes(i)).sort((a,b)=>a.x-b.x||a.y-b.y);for(let j=1;j<on.length;j++){on[j].adj.add(on[j-1].id);on[j-1].adj.add(on[j].id)}}nodes.sort((a,b)=>a.x-b.x||a.y-b.y);computeRegions();history=[];turn=0;setDefaultColor();done=false;notes='';zoomFactor=1;fitView();draw();}
+function fitView(){let xs=nodes.map(n=>n.x),ys=nodes.map(n=>n.y);if(!xs.length){view={x:-5,y:-5,w:10,h:10};baseView={...view};zoomFactor=1;return}let x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);let cx=(x0+x1)/2,cy=(y0+y1)/2,w=Math.max(6,(x1-x0)*1.36+2),h=Math.max(6,(y1-y0)*1.36+2);let ratio=1.35;if(w/h<ratio)w=h*ratio;else h=w/ratio;view={x:cx-w/2,y:cy-h/2,w,h};baseView={...view};zoomFactor=1}
+function setZoom(next){zoomFactor=Math.min(12,Math.max(.35,next));const cx=view.x+view.w/2,cy=view.y+view.h/2;const w=baseView.w/zoomFactor,h=baseView.h/zoomFactor;view={x:cx-w/2,y:cy-h/2,w,h};draw()}
+function blockedBy(n){let s=new Set([...n.adj].map(id=>nodes.find(t=>t.id===id)?.color).filter(Boolean));return palette().every(c=>s.has(c))}
+// block is null (not sealed), 0 (sealed by first player), or 1 (sealed by second player). Never test block by truthiness.
+function refreshBlocks(player){let won=[];for(let n of nodes)if(n.color===null&&n.block===null&&blockedBy(n)){n.block=player;won.push(n)}return won}
+function canPlay(n,c){if(n.color!==null||n.block!==null||!palette().includes(c))return false;for(let id of n.adj)if(nodes.find(t=>t.id===id).color===c)return false;return true}
+function snapshot(){return {state:nodes.map(n=>[n.color,n.block]),turn,done,notes}}
+function restore(s){cancelAI();nodes.forEach((n,i)=>[n.color,n.block]=s.state[i]);turn=s.turn;done=s.done;notes=s.notes;setDefaultColor();draw()}
+function setDefaultColor(){selected=turn===0?'red':'blue';document.querySelectorAll('.choice').forEach(b=>b.classList.toggle('active',b.dataset.color===selected))}
+function play(id, colorOverride=null, fromAI=false){
+ if(done || (!fromAI && (aiBusy || (vsAI()&&turn===1))))return;
+ let n=nodes.find(n=>n.id===id);if(!n)return;
+ const chosen=colorOverride||selected;
+ if(!canPlay(n,chosen)){if(!fromAI){notes='その交点には選んだ色を塗れません。';draw()}return}
+ history.push(snapshot());let acting=turn,paintedColor=chosen;n.color=paintedColor;moveSound(fromAI);
+ let won=refreshBlocks(acting);turn=1-turn;setDefaultColor();
+ notes=`${fromAI?'AI：':''}${n.inc.length}重点を${{red:'赤',blue:'青',white:'白'}[paintedColor]}で彩色。`+(won.length?` ${won.length}個の交点を封鎖！`:'');
+ draw();scheduleAI();
+ }
+function status(){let score=[0,0],colorPts=[0,0],blockPts=[0,0],blocked=0,unpainted=0,legal=0,whitePts=0;for(let n of nodes){let w=n.inc.length-1;if(n.color==='red')colorPts[0]+=w;if(n.color==='blue')colorPts[1]+=w;if(n.color==='white')whitePts+=w;if(n.block!==null){blocked++;blockPts[n.block]+=w}if(n.color===null&&n.block===null){unpainted++;if(palette().some(c=>canPlay(n,c)))legal++}}if(legal===0)done=true;let whiteShare=done&&mode===3?[Math.floor(whitePts/2),Math.ceil(whitePts/2)]:[0,0];score=score.map((_,i)=>colorPts[i]+blockPts[i]+whiteShare[i]);return {score,colorPts,blockPts,blocked,unpainted,legal,whitePts,whiteShare}}
 
+ // AI用の局面表現（彩色・封鎖の所有者を独立して保存）
+ // color: -1=未彩色, 0=赤, 1=青, 2=白; block: -1=なし, 0=先手, 1=後手
+ function aiBoard(){
+   const indices=new Map(nodes.map((n,i)=>[n.id,i]));
+   return {
+     colors:nodes.map(n=>n.color===null?-1:({red:0,blue:1,white:2})[n.color]),
+     blocks:nodes.map(n=>n.block===null?-1:n.block),
+     adj:nodes.map(n=>[...n.adj].map(id=>indices.get(id))),
+     weights:nodes.map(n=>n.inc.length-1)
+   };
+ }
+ function aiLegal(b){
+   let ans=[], count=mode;
+   for(let i=0;i<b.colors.length;i++){
+     if(b.colors[i]!==-1||b.blocks[i]!==-1)continue;
+     let mask=0;for(const j of b.adj[i])if(b.colors[j]!==-1)mask|=1<<b.colors[j];
+     for(let c=0;c<count;c++)if(!(mask&(1<<c)))ans.push([i,c]);
+   }
+   return ans;
+ }
+ function aiAfter(b,move,who){
+   const colors=b.colors.slice(),blocks=b.blocks.slice();colors[move[0]]=move[1];
+   const full=(1<<mode)-1;
+   for(let i=0;i<colors.length;i++){
+     if(colors[i]!==-1||blocks[i]!==-1)continue;
+     let mask=0;for(const j of b.adj[i])if(colors[j]!==-1)mask|=1<<colors[j];
+     if((mask&full)===full)blocks[i]=who;
+   }
+   return {colors,blocks,adj:b.adj,weights:b.weights};
+ }
+ function aiValue(b){
+   let value=0,white=0,freeWeight=0;
+   for(let i=0;i<b.colors.length;i++){
+     const w=b.weights[i],c=b.colors[i];
+     if(c===0)value-=w; else if(c===1)value+=w; else if(c===2)white+=w;
+     if(b.blocks[i]===0)value-=w; else if(b.blocks[i]===1)value+=w;
+     if(c===-1&&b.blocks[i]===-1)freeWeight+=w;
+   }
+   // 白は終了時に折半し，奇数点の端数は後手（AI）へ。
+   // 途中の評価では白の偶奇差だけを保持する。
+   value+=(white%2);
+   return value;
+ }
+ function aiOrdered(b,who,limit){
+   const legal=aiLegal(b),sign=who===1?1:-1;
+   const ranked=legal.map(m=>{
+     let after=aiAfter(b,m,who);
+     let immediate=sign*(aiValue(after)-aiValue(b));
+     // 小さな手番固有の優先度。同点なら大きい重みの交点を優先。
+     let h=immediate+0.012*b.weights[m[0]]+(m[1]===who?0.008:0);
+     return {move:m,after,h};
+   });
+   ranked.sort((a,b)=>b.h-a.h);
+   return limit?ranked.slice(0,limit):ranked;
+ }
+ function aiSearch(b,who,depth,alpha,beta){
+   if(depth<=0)return aiValue(b);
+   const max=who===1;
+   const moves=aiOrdered(b,who,depth>=2?9:6);
+   if(!moves.length)return aiValue(b);
+   let best=max?-Infinity:Infinity;
+   for(const item of moves){
+     let v=aiSearch(item.after,1-who,depth-1,alpha,beta);
+     if(max){best=Math.max(best,v);alpha=Math.max(alpha,best)}
+     else {best=Math.min(best,v);beta=Math.min(beta,best)}
+     if(beta<=alpha)break;
+   }
+   return best;
+ }
+ function aiChoose(){
+   const b=aiBoard(),depth=+$('aiDepth').value;
+   let roots=aiOrdered(b,1,0);
+   if(!roots.length)return null;
+   // すべての初手候補を検討。二手目以降を絞るビーム探索。
+   let best=null,bestVal=-Infinity;
+   for(const item of roots){
+     const val=aiSearch(item.after,0,depth-1,-Infinity,Infinity);
+     const tie=item.h*0.001;
+     if(val+tie>bestVal){bestVal=val+tie;best=item.move}
+   }
+   return best&&{id:nodes[best[0]].id,color:['red','blue','white'][best[1]]};
+ }
+ function scheduleAI(){
+   if(!vsAI()||turn!==1||done||aiBusy)return;
+   let s=status();if(s.legal===0){draw();return}
+   aiBusy=true;notes='AI 考え中...';draw();
+   const epoch=++aiEpoch;
+   // Decide first, then wait three full seconds before actually making the move.
+   aiTimer=setTimeout(()=>{
+     aiTimer=null;
+     if(epoch!==aiEpoch||!vsAI()||done||turn!==1){aiBusy=false;return}
+     try{
+       const decision=aiChoose();
+       if(epoch!==aiEpoch||!vsAI()||done||turn!==1){aiBusy=false;return}
+       if(!decision){aiBusy=false;notes='AIの合法手はありません。';draw();return}
+       notes='AI 考え中...';draw();
+       aiTimer=setTimeout(()=>{
+         aiTimer=null;
+         if(epoch!==aiEpoch||!vsAI()||done||turn!==1){aiBusy=false;return}
+         aiBusy=false;
+         play(decision.id,decision.color,true);
+       },3000);
+     }catch(e){aiBusy=false;notes='AIの計算でエラーが発生しました。'+e.message;console.error(e);draw()}
+   },120);
+ }
+
+ function hideLens(){document.getElementById('magnifier')?.remove();document.getElementById('magnifier-defs')?.remove()}
+function showLens(n){hideLens();let svg=$('board');let r=Math.max(.48,Math.min(view.w,view.h)*.11),x=n.x,y=-n.y;let defs=mkSvg('defs',{id:'magnifier-defs'},svg);let clip=mkSvg('clipPath',{id:'lens-clip',clipPathUnits:'userSpaceOnUse'},defs);mkSvg('circle',{cx:x,cy:y,r},clip);let lens=mkSvg('g',{id:'magnifier','pointer-events':'none'},svg);mkSvg('circle',{cx:x,cy:y,r,fill:'#142b49','fill-opacity':'1'},lens);let zoom=mkSvg('g',{'clip-path':'url(#lens-clip)'},lens);
+// Copy all line segments and intersection graphics into the magnifier: SVG <use> may fail to render dynamic lines on some browsers.
+let scene=$('scene');if(scene){let copy=scene.cloneNode(true);copy.removeAttribute('id');copy.setAttribute('pointer-events','none');copy.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));copy.querySelectorAll('.line').forEach(e=>e.classList.add('lens-line'));let focused=Array.from(copy.querySelectorAll('[data-point-id]')).find(e=>e.getAttribute('data-point-id')===n.id);if(focused)focused.setAttribute('transform',`translate(${x} ${y}) scale(1.3) translate(${-x} ${-y})`);copy.setAttribute('transform',`translate(${x} ${y}) scale(1.85) translate(${-x} ${-y})`);zoom.appendChild(copy)}}
+function draw(){let s=status(),svg=$('board');svg.replaceChildren();svg.setAttribute('viewBox',`${view.x} ${-view.y-view.h} ${view.w} ${view.h}`);let X=x=>x,Y=y=>-y;const pad=Math.max(view.w,view.h)*.015;let minX=view.x,maxX=view.x+view.w,minY=view.y,maxY=view.y+view.h;
+// 座標軸・グリッドは描画しない
+const scene=mkSvg('g',{id:'scene'},svg);
+let r=Math.max(.095,Math.min(.24,view.w/55)),font=r*.87;
+for(let l of lines){let left={x:minX,y:l.a*minX+l.b},right={x:maxX,y:l.a*maxX+l.b},q=[];if(left.y>=minY&&left.y<=maxY)q.push(left);if(right.y>=minY&&right.y<=maxY)q.push(right);if(l.a!==0){for(let y of [minY,maxY]){let x=(y-l.b)/l.a;if(x>=minX&&x<=maxX)q.push({x,y})}}if(q.length>=2)mkSvg('line',{x1:q[0].x,y1:Y(q[0].y),x2:q[1].x,y2:Y(q[1].y),class:'line'},scene)}
+
+for(let n of nodes){let group=mkSvg('g',{'data-point-id':n.id,class:'hit',tabindex:'0',role:'button','aria-label':`(${n.fx.join('/')}, ${n.fy.join('/')}) ${n.inc.length}重点`,style:done?'cursor:default':''},scene);let circle=mkSvg('circle',{cx:X(n.x),cy:Y(n.y),r:r*.96,class:'halo'},group);let fill=n.color?cols[n.color]:n.block!==null?'#354053':'#263b5a';mkSvg('circle',{cx:X(n.x),cy:Y(n.y),r:r*.77,fill,stroke:n.block!==null?cols[n.block===0?'red':'blue']:n.color?'#0b1527':'#88a8db','stroke-width':n.block!==null?r*.23:r*.15,'stroke-dasharray':n.block!==null?`${r*.2} ${r*.13}`:'none'},group);if(n.block!==null)mkSvg('text',{x:X(n.x),y:Y(n.y)+font*.33,'font-size':font*1.05,'font-weight':900,'text-anchor':'middle',fill:cols[n.block===0?'red':'blue']},group).textContent='×';if(n.inc.length>2)mkSvg('text',{x:X(n.x)+r*.75,y:Y(n.y)-r*.65,'font-size':font*.85,fill:'#ffcf78','font-weight':700},group).textContent=n.inc.length - 1;mkSvg('title',{},group).textContent=`(${n.fx[0]}/${n.fx[1]}, ${n.fy[0]}/${n.fy[1]})・${n.inc.length}重点・${n.inc.length-1}点`;group.addEventListener('mouseenter',()=>showLens(n));group.addEventListener('mouseleave',hideLens);group.addEventListener('focus',()=>showLens(n));group.addEventListener('blur',hideLens);group.addEventListener('click',()=>play(n.id));group.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();play(n.id)}})}
+$('pageZoomLabel').textContent=Math.round(pageZoom*100)+'%';$('zoomLabel').textContent=Math.round(zoomFactor*100)+'%';$('whiteScore').hidden=mode!==3;$('whiteScore').textContent=mode===3?`白のポイント：${s.whitePts}点 ／ ${done?`精算済み（先手 ＋${s.whiteShare[0]}、後手 ＋${s.whiteShare[1]}）`:'ゲーム終了後に折半（端数1点は後手へ）'}`:'';for(let i=0;i<2;i++){const base=s.colorPts[i]+s.blockPts[i];$('score'+i).textContent=done&&mode===3?`(${base}) + ${s.whiteShare[i]} = ${s.score[i]}`:String(s.score[i]);$('score'+i).classList.toggle('final-breakdown',done&&mode===3);}for(let i=0;i<2;i++)$('detail'+i).textContent=`彩色 ${s.colorPts[i]} / 封鎖 ${s.blockPts[i]}${mode===3&&done?` / 白 ＋${s.whiteShare[i]}`:""}`;$('remaining').textContent=s.unpainted;$('blocked').textContent=s.blocked;$('moves').textContent=history.length;$('undo').disabled=!history.length;$('depthLabel').hidden=!vsAI();
+$('turn').innerHTML=done?`<span class="result">ゲーム終了：${s.score[0]>s.score[1]?'先手の勝ち！':s.score[1]>s.score[0]?'後手の勝ち！':'引き分け！'}</span>`:`<span style="color:${turn===0?cols.red:cols.blue}">● ${turn===0?'先手':vsAI()?'AI（後手）':'後手'}の番${aiBusy?' ・ 思考中…':''}</span>`;
+const nLines=lines.length;const rooms=1+nLines+s.score[0]+s.score[1];$('roomFormula').hidden=!done;$('roomFormula').innerHTML=done?`<div>獲得ポイントから求めた部屋数（Zaslavskyの定理）</div><strong>${s.score[0]} ＋ ${s.score[1]} ＋ ${nLines} ＋ 1 ＝ ${rooms} 部屋</strong><div class="muted small">先手得点 ＋ 後手得点 ＋ 直線数 ＋ 1 ／ 幾何的に数えた部屋数：${regions.length}（${rooms===regions.length?'一致 ✓':'不一致 ⚠'}）</div>`:'';
+$('message').textContent=notes||(done?'対戦終了。配置を変えるか，同じ配置で再戦できます。':'交点をクリックして彩色してください。');$('viewinfo').textContent=`${lines.length}直線 ・ ${nodes.length}交点 ・ ${regions.length}部屋 ・ 多重点 ${nodes.filter(n=>n.inc.length>2).length}個（小さい数字は重複度-1）`;}
+function options(v){return Array.from({length:7},(_,i)=>{let n=i-3;return `<option value="${n}" ${n===v?'selected':''}>${n}</option>`}).join('')}
+function editRows(){let el=$('lineRows');el.innerHTML='';lines.forEach((l,i)=>{let row=document.createElement('div');row.className='line-row';row.innerHTML=`<span class="muted small">${i+1}</span><select aria-label="傾き">${options(l.a)}</select><select aria-label="切片">${options(l.b)}</select><button aria-label="削除">×</button>`;row.querySelector('button').onclick=()=>{if(lines.length<=2){alert('2本以上の直線が必要です。');return}lines.splice(i,1);editRows();apply()};el.appendChild(row)})}
+function apply(){let arr=[...document.querySelectorAll('.line-row')].map(r=>({a:+r.children[1].value,b:+r.children[2].value}));if(new Set(arr.map(l=>key(l.a,l.b))).size!==arr.length){alert('同一の直線が含まれています。異なる傾き・切片を指定してください。');return}lines=arr;calculate();editRows()}
+function rand(n){let pool=[];for(let a=-3;a<=3;a++)for(let b=-3;b<=3;b++)pool.push({a,b});for(let i=pool.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}lines=pool.slice(0,n);calculate();editRows()}
+function setPageZoom(z){pageZoom=Math.min(1.8,Math.max(.65,Math.round(z*100)/100));document.body.style.zoom=String(pageZoom);$('pageZoomLabel').textContent=Math.round(pageZoom*100)+'%'}
+$('pageIn').onclick=()=>setPageZoom(pageZoom+.1);$('pageOut').onclick=()=>setPageZoom(pageZoom-.1);$('pageReset').onclick=()=>setPageZoom(1);
+$('opponent').onchange=()=>{cancelAI();notes=vsAI()?'AI対戦モード：あなたが先手です。':'人間同士の対戦モードです。';draw();scheduleAI()};$('aiDepth').onchange=()=>{notes='AIの読みの深さを変更しました。';draw()};$('mode').onchange=()=>{mode=+$('mode').value;selected='red';document.querySelectorAll('.choice').forEach(b=>b.classList.toggle('active',b.dataset.color==='red'));$('whiteChoice').hidden=mode===2;$('whiteLegend').hidden=mode===2;$('blockRule').textContent=mode===2?'赤・青の両色が隣接する未彩色交点':'赤・青・白の3色が隣接する未彩色交点';calculate();notes=mode===2?'2色モードに変更しました。盤面をリセットしました。':'3色モードに変更しました。盤面をリセットしました。';draw()};$('random').onclick=()=>rand(+$('count').value);$('restart').onclick=()=>{calculate();notes='同じ配置で再戦します。';draw()};$('undo').onclick=()=>{cancelAI();let s=history.pop();if(s){if(vsAI()&&s.turn===1&&history.length)s=history.pop();restore(s)}};$('fit').onclick=()=>{fitView();draw()};$('zoomIn').onclick=()=>setZoom(zoomFactor*1.25);$('zoomOut').onclick=()=>setZoom(zoomFactor/1.25);$('apply').onclick=apply;$('add').onclick=()=>{if(lines.length===49){alert('直線は最大49本です。');return}let used=new Set(lines.map(l=>key(l.a,l.b))),l;outer:for(let a=-3;a<=3;a++)for(let b=-3;b<=3;b++)if(!used.has(key(a,b))){l={a,b};break outer}if(l){lines.push(l);editRows();apply()}};document.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{selected=b.dataset.color;document.querySelectorAll('.choice').forEach(c=>c.classList.toggle('active',c===b))});for(let i=2;i<=12;i++){let e=document.createElement('option');e.value=i;e.textContent=i;if(i===7)e.selected=true;$('count').append(e)}rand(7);
+})();</script></body></html>
